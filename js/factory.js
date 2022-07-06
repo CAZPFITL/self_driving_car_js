@@ -18,4 +18,8 @@ export class Factory {
         this.verbose && console.log(`- ${lastElementFromType.name} - Created.`);
         return lastElementFromType;
     }
+
+    test() {
+        console.log('Factory test:');
+    }
 }

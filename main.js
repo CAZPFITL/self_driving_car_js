@@ -21,17 +21,22 @@ const car = factory.create(Car, {
 
 // animate logic
 const animate = () => {
+    // run car's main update logic
     car.update();
     canvas.height = window.innerHeight;
 
-    const yTranslation = -car.y + canvas.height / 2;
-
+    // car translation over the canvas
+    const yTranslation = -car.y + canvas.height * 0.7;
+    // save context
     ctx.save();
+    // translate the context in base of the car's position using yTranslation and canvas height as references.
     ctx.translate(0, yTranslation);
 
+    // draw entities
     road.draw(ctx);
     car.draw(ctx);
 
+    // restore context & requestAnimationFrame
     ctx.restore();
     requestAnimationFrame(animate);
 }
