@@ -38,3 +38,21 @@ export const getIntersection = (A, B, C, D) => {
 
     return null;
 }
+
+// just to clear main
+export const processCtx = (canvas, ctx, car) => {
+    canvas.height = window.innerHeight;
+    const yTranslation = -car.y + canvas.height * 0.7;
+    ctx.save();
+    ctx.translate(0, yTranslation);
+}
+
+// draw collection of entities
+export const drawEntities = (ctx, entities, requestCallback) => {
+    entities.forEach(entity => {
+        entity.draw(ctx);
+    })
+    // restore context & requestAnimationFrame
+    ctx.restore();
+    requestAnimationFrame(requestCallback);
+}

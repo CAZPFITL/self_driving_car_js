@@ -23,7 +23,7 @@ export class Sensor {
                 this.rayCount == 1 ? 0.5 : i / (this.rayCount - 1)
             ) + this.car.angle;
             // get start drawing point
-            const start = {x: this.car.x, y: this.car.y - this.car.heightReference};
+            const start = {x: this.car.x, y: this.car.y};
             // get end drawing points
             const end = {
                 x: this.car.x - Math.sin(rayAngle) * this.rayLength,

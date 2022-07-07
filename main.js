@@ -1,4 +1,4 @@
-import {getCanvas} from './js/utils.js';
+import {processCtx, drawEntities, getCanvas} from './js/utils.js';
 import {Car} from './js/car.js';
 import {Road} from './js/road.js';
 
@@ -16,29 +16,15 @@ const car = factory.create(Car, {
     x: road.getLaneCenter(1),
     y: 100,
     width: road.getLaneWidth() * 0.6,
-    height: road.getLaneWidth()
+    height: road.getLaneWidth(),
+    model: 'sedan'
 });
 
 // animate logic
 const animate = () => {
-    // run car's main update logic
     car.update(road.borders);
-    canvas.height = window.innerHeight;
-
-    // car translation over the canvas
-    const yTranslation = -car.y + canvas.height * 0.7;
-    // save context
-    ctx.save();
-    // translate the context in base of the car's position using yTranslation and canvas height as references.
-    ctx.translate(0, yTranslation);
-
-    // draw entities
-    road.draw(ctx);
-    car.draw(ctx);
-
-    // restore context & requestAnimationFrame
-    ctx.restore();
-    requestAnimationFrame(animate);
+    processCtx(canvas, ctx, car)
+    drawEntities(ctx, [road, car], animate);
 }
 
 animate();
