@@ -22,7 +22,7 @@ const car = factory.create(Car, {
 // animate logic
 const animate = () => {
     // run car's main update logic
-    car.update();
+    car.update(road.borders);
     canvas.height = window.innerHeight;
 
     // car translation over the canvas

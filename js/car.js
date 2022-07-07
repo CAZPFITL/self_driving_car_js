@@ -1,5 +1,5 @@
 import {Controls} from './controls.js';
-import {Sensor} from './sensor.min.js';
+import {Sensor} from './sensor.js';
 
 // Car to be trained
 export class Car {
@@ -16,6 +16,7 @@ export class Car {
         this.maxSpeed = 3;
         this.friction = 0.05;
         this.angle = 0;
+        this.heightReference = - height / 2;
         // sense
         this.sensor = new Sensor(this);
         // control
@@ -49,36 +50,41 @@ export class Car {
         this.y -= Math.cos(this.angle) * this.speed;
     }
 
-    update() {
+    #createPolygon() {
+        this.polygon = [];
+        const radius = Math.hypot(this.width, this.height) * 0.5;
+        const angle = Math.atan2(this.width, this.height);
+        this.polygon.push({
+            x: this.x - Math.sin(this.angle - angle) * radius,
+            y: this.y - Math.cos(this.angle - angle) * radius
+        })
+        this.polygon.push({
+            x: this.x - Math.sin(this.angle + angle) * radius,
+            y: this.y - Math.cos(this.angle + angle) * radius
+        })
+        this.polygon.push({
+            x: this.x - Math.sin(Math.PI + this.angle - angle) * radius,
+            y: this.y - Math.cos(Math.PI + this.angle - angle) * radius
+        })
+        this.polygon.push({
+            x: this.x - Math.sin(Math.PI + this.angle + angle) * radius,
+            y: this.y - Math.cos(Math.PI + this.angle + angle) * radius
+        })
+    }
+
+    update(roadBorders) {
         this.#move();
-        this.sensor.update();
+        this.#createPolygon();
+        this.sensor.update(roadBorders);
     }
 
     draw(ctx) {
-        // save the car's context
-        ctx.save()
-
-        // translate the cars position to the cars x and y reference
-        ctx.translate(this.x, this.y);
-
-        // rotate to angle's rate
-        ctx.rotate(-this.angle);
-
-        // draw the car
-        // (position is already established in the previous steps, so we don't need to specify it in here.
-        // we just need remove the half size measures to the actual position)
         ctx.beginPath();
-        ctx.rect(
-            -this.width * 0.5,
-            -this.height * 0.8,
-            this.width,
-            this.height
-        );
+        ctx.moveTo(this.polygon[0].x, this.polygon[0].y - this.heightReference);
+        for (let i = 1; i < this.polygon.length; i++) {
+            ctx.lineTo(this.polygon[i].x, this.polygon[i].y - this.heightReference);
+        }
         ctx.fill()
-
-        // restore car's context
-        ctx.restore();
-
         this.sensor.draw(ctx);
     }
 }
