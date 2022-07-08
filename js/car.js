@@ -1,6 +1,7 @@
 import {Controls} from './controls.js';
 import {Sensor} from './sensor.js';
 import {models} from './models.js';
+import {getTurnRatio} from './utils.js';
 
 // Car to be trained
 export class Car {
@@ -23,12 +24,16 @@ export class Car {
     #getModelData() {
         this.speed = 0;
         this.angle = 0;
+
         this.maxSpeed = models[this.model].maxSpeed;
         this.friction = models[this.model].friction;
-        this.turnRatio = models[this.model].turnRatio;
+
+        this.turnRatio = getTurnRatio(models[this.model]);
         this.acceleration = models[this.model].acceleration;
-        this.calculated_radius = Math.hypot(this.width, this.height) * 0.4;
+
+        this.calculated_radius = Math.hypot(this.width, this.height) * 0.5;
         this.calculated_angle = Math.atan2(this.width, this.height);
+
         this.model_polygons = models[this.model].polygons;
     }
 

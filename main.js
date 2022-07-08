@@ -17,7 +17,7 @@ const car = factory.create(Car, {
     y: 100,
     width: road.getLaneWidth() * 0.6,
     height: road.getLaneWidth(),
-    model: 'sedan'
+    model: 'sport'
 });
 
 // animate logic

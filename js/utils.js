@@ -56,3 +56,10 @@ export const drawEntities = (ctx, entities, requestCallback) => {
     ctx.restore();
     requestAnimationFrame(requestCallback);
 }
+
+export const getTurnRatio = (model, crd = 0.25) => {
+    const a = 1 / model.friction;
+    const b = model.acceleration / crd;
+    const c = (a / b) * model.maxSpeed;
+    return c;
+}
