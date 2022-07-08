@@ -11,7 +11,7 @@ const road = factory.create(Road, {
     width: canvas.width * 0.9
 });
 
-const model = 'sedan'
+const model = 'f1'
 
 // create the car
 const car = factory.create(Car, {
