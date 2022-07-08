@@ -11,13 +11,13 @@ const road = factory.create(Road, {
     width: canvas.width * 0.9
 });
 
+const model = 'sedan'
+
 // create the car
 const car = factory.create(Car, {
     x: road.getLaneCenter(1),
     y: 100,
-    width: road.getLaneWidth() * 0.6,
-    height: road.getLaneWidth(),
-    model: 'sport'
+    model
 });
 
 // animate logic

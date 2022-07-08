@@ -5,13 +5,11 @@ import {getTurnRatio} from './utils.js';
 
 // Car to be trained
 export class Car {
-    constructor({id = 0, x, y, width, height, model}) {
+    constructor({id = 0, x, y, model}) {
         this.name = 'Car-' + model + ' #' + id;
         // position and size
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
         this.model = model;
         // sense
         this.sensor = new Sensor(this);
@@ -30,9 +28,6 @@ export class Car {
 
         this.turnRatio = getTurnRatio(models[this.model]);
         this.acceleration = models[this.model].acceleration;
-
-        this.calculated_radius = Math.hypot(this.width, this.height) * 0.5;
-        this.calculated_angle = Math.atan2(this.width, this.height);
 
         this.model_polygons = models[this.model].polygons;
     }
