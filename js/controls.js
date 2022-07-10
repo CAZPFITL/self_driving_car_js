@@ -1,11 +1,11 @@
 export class Controls {
-    constructor() {
+    constructor(control = false) {
         this.forward = false;
         this.reverse = false;
         this.right = false;
         this.left = false;
 
-        this.#addKeyboardListeners();
+        control ? this.#addKeyboardListeners() : (this.forward = true);
     }
 
     // Private method to add keyboard listeners

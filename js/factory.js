@@ -1,7 +1,7 @@
 export class Factory {
     constructor() {
         this.binnacle = [];
-        this.verbose = true
+        this.verbose = true;
     }
 
     create(object, props) {

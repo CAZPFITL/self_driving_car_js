@@ -7,7 +7,7 @@ export class Road {
         this.x = x;
         this.width = width;
         this.laneCount = laneCount;
-        // add reference to edges of the road
+        // add reference the edges of the road
         this.left = x - width / 2;
         this.right = x + width / 2;
         // add reference to draw the lines
