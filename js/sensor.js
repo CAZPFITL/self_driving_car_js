@@ -1,4 +1,4 @@
-import {lerp, getIntersection} from './utils.js';
+import {lerp, colors, getIntersection} from './utils.js';
 
 export class Sensor {
     constructor(car) {
@@ -103,8 +103,8 @@ export class Sensor {
     //loop through all the rays to draw them
     #drawRays(ctx) {
         for (let i = 0; i < this.rays.length; i++) {
-            this.#drawRay(ctx, this.rays[i], i, 'yellow', 0);
-            this.#drawRay(ctx, this.rays[i], i, 'black', 1);
+            this.#drawRay(ctx, this.rays[i], i, colors[5], 0);
+            this.#drawRay(ctx, this.rays[i], i, colors[4], 1);
         }
     }
 

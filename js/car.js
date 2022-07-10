@@ -1,30 +1,37 @@
 import {Controls} from './controls.js';
 import {Sensor} from './sensor.js';
 import {models} from './models.js';
-import {getTurnRatio, polysIntersect} from './utils.js';
+import {colors, getTurnRatio, polysIntersect, random} from './utils.js';
+import {NeuralNetwork} from "./network.js";
 
 // Car to be trained
 export class Car {
-    constructor({id = 0, x, y, model, control = false}) {
+    constructor({id = 0, x, y, model, control = false, color = colors[2]}) {
         this.name = 'Car-' + model + ' #' + id;
         // position and size
         this.x = x;
         this.y = y;
-        this.model = model;
         // sense
-        this.sensor = control && new Sensor(this);
+        if (control) {
+            this.sensor = new Sensor(this);
+            this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
+            console.log(this.brain)
+        }
         // control
         this.controls = new Controls(control);
         // model
-        this.#getModelData(control);
+        this.#getModelData(control, model, color);
     }
 
-    #getModelData(control) {
+    #getModelData(control, model, color) {
         this.speed = 0;
         this.angle = 0;
         this.damaged = false;
 
-        this.maxSpeed = !control ? (models[this.model].maxSpeed * 0.6) : models[this.model].maxSpeed;
+        this.model = model;
+        this.color = color;
+        // TODO: randomize speed and avoid coalitions on traffic
+        this.maxSpeed = !control ? (models[this.model].maxSpeed * 0.6 * random(1, 1)) : models[this.model].maxSpeed;
         this.friction = models[this.model].friction;
 
         this.turnRatio = getTurnRatio(models[this.model]);
@@ -87,7 +94,12 @@ export class Car {
             this.#createPolygon();
             this.damaged = this.#assesDamage(roadBorders, traffic);
         }
-        this.sensor && this.sensor.update(roadBorders, traffic);
+        if (this.sensor){
+            this.sensor.update(roadBorders, traffic);
+            const offsets = this.sensor.readings.map(reading => reading==null ? 0 : 1 - reading.offset );
+            const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+            console.log(outputs);
+        }
     }
 
     draw(ctx, color) {
@@ -96,7 +108,7 @@ export class Car {
         for (let i = 1; i < this.polygon.length; i++) {
             ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
         }
-        ctx.fillStyle = this.damaged ? 'red' : color;
+        ctx.fillStyle = this.damaged ? colors[3] : color;
         ctx.fill()
         this.sensor && this.sensor.draw(ctx);
     }
