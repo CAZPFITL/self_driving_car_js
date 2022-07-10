@@ -35,7 +35,7 @@ export class Sensor {
     }
 
     // get all touches and return the closest one
-    #getReading(ray, roadBorders) {
+    #getReading(ray, roadBorders, traffic) {
         let touches = [];
         for (let i = 0; i < roadBorders.length; i++) {
             // getIntersection returns { x, y, offset }
@@ -49,19 +49,35 @@ export class Sensor {
                 touches.push(touch);
             }
         }
-
-        return (touches.length === 0) ?
-            null :
-            touches.reduce((a, b) => {
-                return a.offset < b.offset ? a.offset : b.offset;
-            });
+        // get reading of traffic
+        for (let i = 0; i < traffic.length; i++) {
+            const poly = traffic[i].polygon;
+            for (let j = 0; j < poly.length; j++) {
+                const value = getIntersection(
+                    ray[0],
+                    ray[1],
+                    poly[j],
+                    poly[(j + 1) % poly.length]
+                );
+                if (value) {
+                    touches.push(value);
+                }
+            }
+        }
+        if (touches.length === 0) {
+            return null;
+        } else {
+            const offsets = touches.map(e => e.offset);
+            const minOffset = Math.min(...offsets);
+            return touches.find(touch => touch.offset === minOffset);
+        }
     }
 
     // get all readings of the sensor
-    #getReadings(roadBorders) {
+    #getReadings(roadBorders, traffic) {
         this.readings = [];
         for (let i = 0; i < this.rays.length; i++) {
-            this.readings.push(this.#getReading(this.rays[i], roadBorders));
+            this.readings.push(this.#getReading(this.rays[i], roadBorders, traffic));
         }
     }
 
@@ -93,9 +109,9 @@ export class Sensor {
     }
 
     // get the readings of each one the rays
-    update(roadBorders) {
+    update(roadBorders, traffic) {
         this.#castRays();
-        this.#getReadings(roadBorders);
+        this.#getReadings(roadBorders, traffic);
     }
 
     draw(ctx) {

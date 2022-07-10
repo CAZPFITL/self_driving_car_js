@@ -22,10 +22,10 @@ const traffic = [
 // animate logic
 const animate = () => {
     for (let i = 0; i < traffic.length; i++) {
-        traffic[i].update(road.borders);
+        traffic[i].update(road.borders, []);
     }
 
-    car.update(road.borders);
+    car.update(road.borders, traffic);
 
     canvas.height = window.innerHeight;
 
@@ -34,9 +34,9 @@ const animate = () => {
 
     road.draw(ctx);
     for (let i = 0; i < traffic.length; i++) {
-        traffic[i].draw(ctx);
+        traffic[i].draw(ctx, 'purple');
     }
-    car.draw(ctx);
+    car.draw(ctx, 'blue');
 
     // restore context & requestAnimationFrame
     ctx.restore();

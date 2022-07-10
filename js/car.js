@@ -68,30 +68,35 @@ export class Car {
         }
     }
 
-    #assesDamage(roadBorders) {
+    #assesDamage(roadBorders, traffic) {
+        // TODO: fix this polygon thing to use a for inside a for and receive an array as parameter
         for (let i = 0; i < roadBorders.length; i++) {
             if (polysIntersect(this.polygon, roadBorders[i]))
+                return true;
+        }
+        for (let i = 0; i < traffic.length; i++) {
+            if (polysIntersect(this.polygon, traffic[i].polygon))
                 return true;
         }
         return false;
     }
 
-    update(roadBorders) {
+    update(roadBorders, traffic) {
         if (!this.damaged) {
             this.#move();
             this.#createPolygon();
-            this.damaged = this.#assesDamage(roadBorders);
+            this.damaged = this.#assesDamage(roadBorders, traffic);
         }
-        this.sensor && this.sensor.update(roadBorders);
+        this.sensor && this.sensor.update(roadBorders, traffic);
     }
 
-    draw(ctx) {
+    draw(ctx, color) {
         ctx.beginPath();
         ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
         for (let i = 1; i < this.polygon.length; i++) {
             ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
         }
-        ctx.fillStyle = this.damaged ? 'red' : 'black';
+        ctx.fillStyle = this.damaged ? 'red' : color;
         ctx.fill()
         this.sensor && this.sensor.draw(ctx);
     }
