@@ -63,11 +63,12 @@ export class Road {
         }
         // draw the borders
         ctx.setLineDash([]);
-        this.borders.forEach(border => {
+        for (let i = 0; i < this.borders.length; i++) {
+            const [top, bottom] = this.borders[i];
             ctx.beginPath();
-            ctx.moveTo(border[0].x, border[0].y);
-            ctx.lineTo(border[1].x, border[1].y);
+            ctx.moveTo(top.x, top.y);
+            ctx.lineTo(bottom.x, bottom.y);
             ctx.stroke();
-        })
+        }
     }
 }

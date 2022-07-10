@@ -16,7 +16,7 @@ export const getCanvas = (width) => {
         ctx: canvas.getContext('2d'),
         factory
     }
-}
+};
 
 // detect the intersection of two lines
 export const getIntersection = (A, B, C, D) => {
@@ -37,7 +37,7 @@ export const getIntersection = (A, B, C, D) => {
     }
 
     return null;
-}
+};
 
 // just to clear main
 export const processCtx = (canvas, ctx, car) => {
@@ -45,17 +45,35 @@ export const processCtx = (canvas, ctx, car) => {
     const yTranslation = -car.y + canvas.height * 0.7;
     ctx.save();
     ctx.translate(0, yTranslation);
-}
+};
 
 // draw collection of entities
 export const drawEntities = (ctx, entities, requestCallback) => {
-    entities.forEach(entity => {
-        entity.draw(ctx);
-    })
+    for (let i = 0; i < entities.length; i++) {
+        entities[i].draw(ctx);
+    }
     // restore context & requestAnimationFrame
     ctx.restore();
     requestAnimationFrame(requestCallback);
+};
+
+export const getTurnRatio = (model, crd = 0.35) => {
+    return model.maxSpeed * crd / model.friction / model.acceleration;
 }
 
-export const getTurnRatio = (model, crd = 0.25) =>
-    model.maxSpeed * crd / model.friction / model.acceleration;
+export const polysIntersect = (poly1, poly2) => {
+    for (let i = 0; i < poly1.length; i++) {
+        for (let j = 0; j < poly2.length; j++) {
+            const touch = getIntersection(
+                poly1[i],
+                poly1[(i+1)%poly1.length],
+                poly2[j],
+                poly2[(j+1)%poly2.length],
+            )
+            if (touch) {
+                return true;
+            }
+        }
+    }
+    return false;
+}

@@ -37,20 +37,18 @@ export class Sensor {
     // get all touches and return the closest one
     #getReading(ray, roadBorders) {
         let touches = [];
-
-        roadBorders.forEach(border => {
+        for (let i = 0; i < roadBorders.length; i++) {
             // getIntersection returns { x, y, offset }
             const touch = getIntersection(
                 ray[0],
                 ray[1],
-                border[0],
-                border[1]
+                roadBorders[i][0],
+                roadBorders[i][1]
             );
             if (touch) {
                 touches.push(touch);
             }
-        })
-
+        }
 
         return (touches.length === 0) ?
             null :
@@ -62,15 +60,13 @@ export class Sensor {
     // get all readings of the sensor
     #getReadings(roadBorders) {
         this.readings = [];
-        this.rays.forEach(ray => {
-            this.readings.push(
-                this.#getReading(ray, roadBorders)
-            );
-        });
+        for (let i = 0; i < this.rays.length; i++) {
+            this.readings.push(this.#getReading(this.rays[i], roadBorders));
+        }
     }
 
     // draw a single line
-    #drawRay({ctx, ray, i}, color, n) {
+    #drawRay(ctx, ray, i, color, n) {
         let end = this.readings[i] ?? ray[1];
 
         // ray drawing
@@ -90,10 +86,10 @@ export class Sensor {
 
     //loop through all the rays to draw them
     #drawRays(ctx) {
-        this.rays.forEach((ray, i) => {
-            this.#drawRay({ctx, ray, i}, 'yellow', 0);
-            this.#drawRay({ctx, ray, i}, 'black', 1);
-        })
+        for (let i = 0; i < this.rays.length; i++) {
+            this.#drawRay(ctx, this.rays[i], i, 'yellow', 0);
+            this.#drawRay(ctx, this.rays[i], i, 'black', 1);
+        }
     }
 
     // get the readings of each one the rays

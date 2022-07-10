@@ -1,7 +1,7 @@
 import {Controls} from './controls.js';
 import {Sensor} from './sensor.js';
 import {models} from './models.js';
-import {getTurnRatio} from './utils.js';
+import {getTurnRatio, polysIntersect} from './utils.js';
 
 // Car to be trained
 export class Car {
@@ -22,6 +22,7 @@ export class Car {
     #getModelData() {
         this.speed = 0;
         this.angle = 0;
+        this.damaged = false;
 
         this.maxSpeed = models[this.model].maxSpeed;
         this.friction = models[this.model].friction;
@@ -62,12 +63,23 @@ export class Car {
     #createPolygon() {
         this.polygon = [];
         const points = this.model_polygons(this);
-        points.forEach(point => this.polygon.push(point))
+        for (let i = 0; i < points.length; i++) {
+            this.polygon.push(points[i]);
+        }
+    }
+
+    #assesDamage(roadBorders) {
+        for (let i = 0; i < roadBorders.length; i++) {
+            if (polysIntersect(this.polygon, roadBorders[i]))
+                return true;
+        }
+        return false;
     }
 
     update(roadBorders) {
         this.#move();
         this.#createPolygon();
+        this.damaged = this.#assesDamage(roadBorders);
         this.sensor.update(roadBorders);
     }
 
@@ -77,6 +89,7 @@ export class Car {
         for (let i = 1; i < this.polygon.length; i++) {
             ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
         }
+        ctx.fillStyle = this.damaged ? 'red' : 'black';
         ctx.fill()
         this.sensor.draw(ctx);
     }

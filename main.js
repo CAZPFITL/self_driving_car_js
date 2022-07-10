@@ -11,7 +11,7 @@ const road = factory.create(Road, {
     width: canvas.width * 0.9
 });
 
-const model = 'f1'
+const model = 'sedan';
 
 // create the car
 const car = factory.create(Car, {
@@ -23,7 +23,7 @@ const car = factory.create(Car, {
 // animate logic
 const animate = () => {
     car.update(road.borders);
-    processCtx(canvas, ctx, car)
+    processCtx(canvas, ctx, car);
     drawEntities(ctx, [road, car], animate);
 }
 
