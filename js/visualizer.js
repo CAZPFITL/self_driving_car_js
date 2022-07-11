@@ -99,7 +99,7 @@ export class Visualizer{
                 ctx.beginPath();
                 ctx.textAlign="center";
                 ctx.textBaseline="middle";
-                ctx.fillStyle="#0095ff";
+                ctx.fillStyle="#000000";
                 ctx.strokeStyle="#0069ff";
                 ctx.font=(nodeRadius*1)+"px Arial";
                 ctx.fillText(outputLabels[i],x,top+nodeRadius*0.1);

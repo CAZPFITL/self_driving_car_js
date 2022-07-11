@@ -114,7 +114,7 @@ export class Car {
         }
     }
 
-    draw(gameCtx, color) {
+    draw(gameCtx, color, drawSensors) {
         gameCtx.beginPath();
         gameCtx.moveTo(this.polygon[0].x, this.polygon[0].y);
         for (let i = 1; i < this.polygon.length; i++) {
@@ -122,6 +122,6 @@ export class Car {
         }
         gameCtx.fillStyle = this.damaged ? colors[3] : color;
         gameCtx.fill()
-        this.sensor && this.sensor.draw(gameCtx);
+        this.sensor && drawSensors && this.sensor.draw(gameCtx);
     }
 }

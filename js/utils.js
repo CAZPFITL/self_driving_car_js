@@ -88,7 +88,7 @@ export const getRGBA = (value) => {
     const R=value<0?0:255;
     const G=R;
     const B=value>0?0:255;
-    return "rgba("+R+","+G+","+B+","+alpha+")";
+    return `rgba(${R}, ${G}, ${B}, ${alpha}`;
 }
 
 // random number between a and b
@@ -97,24 +97,26 @@ export const random = (min, max) => {
 }
 
 // update the cars Entities providing data
-export const updateEntities = ({road, car, traffic}) => {
+export const updateEntities = ({road, cars, traffic}) => {
     for (let i = 0; i < traffic.length; i++) {
         traffic[i].update(road.borders, []);
     }
-    car.update(road.borders, traffic);
+    for (let i = 0; i < cars.length; i++) {
+        cars[i].update(road.borders, traffic);
+    }
 }
 
 // just to clear main
-export const processCtx = ({gameCanvas, gameCtx, networkCanvas, networkCtx, car}) => {
+export const processCtx = ({gameCanvas, gameCtx, networkCanvas, networkCtx, bestCar}) => {
     // gameCanvas process
     gameCanvas.height = window.innerHeight;
     networkCanvas.height = window.innerHeight;
     gameCtx.save();
-    gameCtx.translate(0, -car.y + gameCanvas.height * 0.7);
+    gameCtx.translate(0, -bestCar.y + gameCanvas.height * 0.7);
 };
 
 // draw collection of entities
-export const drawEntities = (gameCtx, entities) => {
+export const drawEntities = (gameCtx, entities, bestCar) => {
     for (let i = 0; i < entities.length; i++) {
         // check if entities[i] is an instance of an array to loop it
         // draws normally if not an array
@@ -125,5 +127,12 @@ export const drawEntities = (gameCtx, entities) => {
         } else {
             entities[i].draw(gameCtx, entities[i].color);
         }
+        if (i === entities.length - 2) {
+            gameCtx.globalAlpha = 0.2;
+        }
+        if (i === entities.length - 1) {
+            gameCtx.globalAlpha = 1;
+        }
+        bestCar.draw(gameCtx, bestCar.color, true);
     }
 };
