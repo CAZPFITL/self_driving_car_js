@@ -6,32 +6,36 @@ import {NeuralNetwork} from "./network.js";
 
 // Car to be trained
 export class Car {
-    constructor({id = 0, x, y, model, control = false, color = colors[2]}) {
-        this.name = 'Car-' + model + ' #' + id;
-        // position and size
-        this.x = x;
-        this.y = y;
-        // sense
-        if (control) {
-            this.sensor = new Sensor(this);
-            this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
-            console.log(this.brain)
-        }
-        // control
-        this.controls = new Controls(control);
+    constructor(props) {
+        this.prefix = props.control === 'AI' ? 'AI-' : '';
+        this.name = 'Car-' + props.model + ' #' + (props.id ?? 0);
+        this.color = props.color ?? colors[2];
+        this.x = props.x;
+        this.y = props.y;
+        this.useBrain = props.control === 'AI';
         // model
-        this.#getModelData(control, model, color);
+        this.#getModelData(props);
     }
 
-    #getModelData(control, model, color) {
+    #getModelData({control, model}) {
+        // sense
+        if (Boolean(control)) {
+            this.sensor = new Sensor(this);
+            this.brain = new NeuralNetwork([
+                this.sensor.rayCount,
+                6,
+                4
+            ]);
+        }
+        this.controls = new Controls(control);
+
         this.speed = 0;
         this.angle = 0;
         this.damaged = false;
 
         this.model = model;
-        this.color = color;
         // TODO: randomize speed and avoid coalitions on traffic
-        this.maxSpeed = !control ? (models[this.model].maxSpeed * 0.6 * random(1, 1)) : models[this.model].maxSpeed;
+        this.maxSpeed = control ? models[this.model].maxSpeed : (models[this.model].maxSpeed * 0.6 * random(1, 1));
         this.friction = models[this.model].friction;
 
         this.turnRatio = getTurnRatio(models[this.model]);
@@ -89,27 +93,35 @@ export class Car {
     }
 
     update(roadBorders, traffic) {
+        // If you crash you die. :(
         if (!this.damaged) {
             this.#move();
             this.#createPolygon();
             this.damaged = this.#assesDamage(roadBorders, traffic);
         }
+        // check for sensor and proceed
         if (this.sensor){
             this.sensor.update(roadBorders, traffic);
-            const offsets = this.sensor.readings.map(reading => reading==null ? 0 : 1 - reading.offset );
+            const offsets = this.sensor.readings.map(sensor => sensor==null ? 0 : 1 - sensor.offset );
             const outputs = NeuralNetwork.feedForward(offsets, this.brain);
-            console.log(outputs);
+            // console.log(outputs);
+            if (this.useBrain) {
+                this.controls.forward = outputs[0];
+                this.controls.left = outputs[1];
+                this.controls.right = outputs[2];
+                this.controls.reverse = outputs[3];
+            }
         }
     }
 
-    draw(ctx, color) {
-        ctx.beginPath();
-        ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
+    draw(gameCtx, color) {
+        gameCtx.beginPath();
+        gameCtx.moveTo(this.polygon[0].x, this.polygon[0].y);
         for (let i = 1; i < this.polygon.length; i++) {
-            ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
+            gameCtx.lineTo(this.polygon[i].x, this.polygon[i].y);
         }
-        ctx.fillStyle = this.damaged ? colors[3] : color;
-        ctx.fill()
-        this.sensor && this.sensor.draw(ctx);
+        gameCtx.fillStyle = this.damaged ? colors[3] : color;
+        gameCtx.fill()
+        this.sensor && this.sensor.draw(gameCtx);
     }
 }

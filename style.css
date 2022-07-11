@@ -5,6 +5,10 @@ body {
     text-align: center;
 }
 
-#canvas {
-    background: lightgray;
+#gameCanvas {
+    background: #838383;
+}
+
+#networkCanvas {
+    background: #000000;
 }

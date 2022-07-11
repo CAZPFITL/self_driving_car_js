@@ -44,10 +44,10 @@ export class Road {
     }
 
 
-    draw(ctx) {
+    draw(gameCtx) {
         // configure the stroke and line props
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = '#FFFFFF';
+        gameCtx.lineWidth = 5;
+        gameCtx.strokeStyle = '#FFFFFF';
         // draw the road lines
         for (let i = 1; i <= this.laneCount-1; i++) {
             const x = lerp(
@@ -55,20 +55,20 @@ export class Road {
                 this.right,
                 i / this.laneCount
             );
-            ctx.setLineDash([20, 20]);
-            ctx.beginPath();
-            ctx.moveTo(x, this.top);
-            ctx.lineTo(x, this.bottom);
-            ctx.stroke();
+            gameCtx.setLineDash([20, 20]);
+            gameCtx.beginPath();
+            gameCtx.moveTo(x, this.top);
+            gameCtx.lineTo(x, this.bottom);
+            gameCtx.stroke();
         }
         // draw the borders
-        ctx.setLineDash([]);
+        gameCtx.setLineDash([]);
         for (let i = 0; i < this.borders.length; i++) {
             const [top, bottom] = this.borders[i];
-            ctx.beginPath();
-            ctx.moveTo(top.x, top.y);
-            ctx.lineTo(bottom.x, bottom.y);
-            ctx.stroke();
+            gameCtx.beginPath();
+            gameCtx.moveTo(top.x, top.y);
+            gameCtx.lineTo(bottom.x, bottom.y);
+            gameCtx.stroke();
         }
     }
 }

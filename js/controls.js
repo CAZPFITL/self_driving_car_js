@@ -5,7 +5,7 @@ export class Controls {
         this.right = false;
         this.left = false;
 
-        control ? this.#addKeyboardListeners() : (this.forward = true);
+        Boolean(control) ? this.#addKeyboardListeners() : (this.forward = true);
     }
 
     // Private method to add keyboard listeners

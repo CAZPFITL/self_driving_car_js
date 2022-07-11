@@ -82,29 +82,29 @@ export class Sensor {
     }
 
     // draw a single line
-    #drawRay(ctx, ray, i, color, n) {
+    #drawRay(gameCtx, ray, i, color, n) {
         let end = this.readings[i] ?? ray[1];
 
         // ray drawing
-        ctx.beginPath();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = color;
-        ctx.moveTo(
+        gameCtx.beginPath();
+        gameCtx.lineWidth = 2;
+        gameCtx.strokeStyle = color;
+        gameCtx.moveTo(
             ray[n].x,
             ray[n].y
         );
-        ctx.lineTo(
+        gameCtx.lineTo(
             end.x,
             end.y
         );
-        ctx.stroke();
+        gameCtx.stroke();
     }
 
     //loop through all the rays to draw them
-    #drawRays(ctx) {
+    #drawRays(gameCtx) {
         for (let i = 0; i < this.rays.length; i++) {
-            this.#drawRay(ctx, this.rays[i], i, colors[5], 0);
-            this.#drawRay(ctx, this.rays[i], i, colors[4], 1);
+            this.#drawRay(gameCtx, this.rays[i], i, colors[5], 0);
+            this.#drawRay(gameCtx, this.rays[i], i, colors[4], 1);
         }
     }
 
@@ -114,7 +114,7 @@ export class Sensor {
         this.#getReadings(roadBorders, traffic);
     }
 
-    draw(ctx) {
-        this.#drawRays(ctx)
+    draw(gameCtx) {
+        this.#drawRays(gameCtx)
     }
 }

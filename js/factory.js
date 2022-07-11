@@ -1,25 +1,25 @@
 export class Factory {
     constructor() {
         this.binnacle = [];
-        this.verbose = true;
+        this.verbose = false;
     }
 
     create(object, props) {
-        // object index fallback
-        if (!this.binnacle[object])
+        // Create an object collection if it doesn't exist
+        if (!this.binnacle[object]) {
             this.binnacle[object] = [];
-        // object instantiation
+        }
+        // Instantiate the object
         const id = this.binnacle[object].length;
         const instanceFromType = new object({id, ...props})
-        // object registration
+        // Object registration in binnacle
         this.binnacle[object].push(instanceFromType);
-        const lastElementFromType = this.binnacle[object][this.binnacle.length];
-        // dispatch object
-        this.verbose && console.log(`- ${lastElementFromType.name} - Created.`);
-        return lastElementFromType;
-    }
+        this.verbose && console.log(
+            `%c${instanceFromType.prefix ?? ''}%c${instanceFromType.name} - Created.`,
+            'font-weight: bold; color: #AA9922;',
+            'font-weight: light;'
+        );
 
-    test() {
-        console.log('Factory test:');
+        return instanceFromType;
     }
 }

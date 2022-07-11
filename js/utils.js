@@ -1,20 +1,24 @@
 import {Factory} from './factory.js';
 
+// == Math utils ==
 // lerp works for linear interpolation
 export const lerp = (a, b, t) => a + (b - a) * t;
 
 // clamp a number between a and b
 export const clamp = (x, a, b) => Math.min(Math.max(x, a), b);
 
-// create the working canvas
+// create the working gameCanvas
 export const getCanvas = (width) => {
-    const canvas = document.getElementById('canvas');
-    const factory = new Factory();
-    canvas.width = width;
+    const gameCanvas = document.getElementById('gameCanvas');
+    gameCanvas.width = width;
+    const networkCanvas = document.getElementById('networkCanvas');
+    networkCanvas.width = width + 200;
     return {
-        canvas,
-        ctx: canvas.getContext('2d'),
-        factory
+        gameCanvas,
+        gameCtx: gameCanvas.getContext('2d'),
+        networkCanvas,
+        networkCtx: networkCanvas.getContext('2d'),
+        factory: new Factory()
     }
 };
 
@@ -25,8 +29,8 @@ export const getIntersection = (A, B, C, D) => {
     const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
 
     if (bottom != 0) {
-        const t = tTop/bottom;
-        const u = uTop/bottom;
+        const t = tTop / bottom;
+        const u = uTop / bottom;
         if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
             return {
                 x: lerp(A.x, B.x, t),
@@ -39,25 +43,10 @@ export const getIntersection = (A, B, C, D) => {
     return null;
 };
 
-// just to clear main
-export const processCtx = (canvas, ctx, car) => {
-
-};
-
-// draw collection of entities
-export const drawEntities = (ctx, entities, requestCallback) => {
-    for (let i = 0; i < entities.length; i++) {
-        entities[i].draw(ctx);
-    }
-    // restore context & requestAnimationFrame
-    ctx.restore();
-    requestAnimationFrame(requestCallback);
-};
-
 // calculate car's turning angle's rate change
-export const getTurnRatio = (model, crd = 0.35) => {
-    return model.maxSpeed * crd / model.friction / model.acceleration;
-}
+export const getTurnRatio = (model, crd = 0.35) => (
+    model.maxSpeed * crd / model.friction / model.acceleration
+);
 
 // detect polygons intersection
 export const polysIntersect = (poly1, poly2) => {
@@ -65,9 +54,9 @@ export const polysIntersect = (poly1, poly2) => {
         for (let j = 0; j < poly2.length; j++) {
             const touch = getIntersection(
                 poly1[i],
-                poly1[(i+1)%poly1.length],
+                poly1[(i + 1) % poly1.length],
                 poly2[j],
-                poly2[(j+1)%poly2.length],
+                poly2[(j + 1) % poly2.length],
             )
             if (touch) {
                 return true;
@@ -77,6 +66,8 @@ export const polysIntersect = (poly1, poly2) => {
     return false;
 }
 
+
+// == main.js utils ==
 // game colors
 export const colors = [
     '#ffffff',  // 0 - white
@@ -92,7 +83,47 @@ export const colors = [
     '#8700b4',  // 10
 ]
 
+export const getRGBA = (value) => {
+    const alpha=Math.abs(value);
+    const R=value<0?0:255;
+    const G=R;
+    const B=value>0?0:255;
+    return "rgba("+R+","+G+","+B+","+alpha+")";
+}
+
 // random number between a and b
 export const random = (min, max) => {
     return Math.random() * (max - min) + min;
 }
+
+// update the cars Entities providing data
+export const updateEntities = ({road, car, traffic}) => {
+    for (let i = 0; i < traffic.length; i++) {
+        traffic[i].update(road.borders, []);
+    }
+    car.update(road.borders, traffic);
+}
+
+// just to clear main
+export const processCtx = ({gameCanvas, gameCtx, networkCanvas, networkCtx, car}) => {
+    // gameCanvas process
+    gameCanvas.height = window.innerHeight;
+    networkCanvas.height = window.innerHeight;
+    gameCtx.save();
+    gameCtx.translate(0, -car.y + gameCanvas.height * 0.7);
+};
+
+// draw collection of entities
+export const drawEntities = (gameCtx, entities) => {
+    for (let i = 0; i < entities.length; i++) {
+        // check if entities[i] is an instance of an array to loop it
+        // draws normally if not an array
+        if (entities[i] instanceof Array) {
+            for (let j = 0; j < entities[i].length; j++) {
+                entities[i][j].draw(gameCtx, entities[i][j].color);
+            }
+        } else {
+            entities[i].draw(gameCtx, entities[i].color);
+        }
+    }
+};

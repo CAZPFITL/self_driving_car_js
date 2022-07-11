@@ -1,42 +1,51 @@
 export class NeuralNetwork {
     constructor(neuronCount) {
         this.levels = [];
-        for (let i = 0; i < neuronCount.length; i++) {
-            this.levels.push(new Level(neuronCount[i], neuronCount[i+1]));
+        for (let i = 0; i < neuronCount.length - 1; i++) {
+            this.levels.push(new Level(
+                neuronCount[i],
+                neuronCount[i+1]
+            ));
         }
     }
 
+    // feed forward propagation of the network
     static feedForward(givenInputs, network) {
+        // get the level outputs
         let outputs = Level.feedForward(
             givenInputs,
             network.levels[0]
         );
         for (let i = 1; i < network.levels.length; i++) {
+            // Put the level outputs in the new inputs
             outputs = Level.feedForward(
                 outputs,
                 network.levels[i]
             );
         }
+        // return the last level outputs
         return outputs;
     }
 }
 
-
+// this class works as a layer of the neural network
 export class Level {
+    // constructor takes the number of inputs and outputs
     constructor(inputCount, outputCount) {
+        // create the arrays
         this.inputs = new Array(inputCount);
         this.outputs = new Array(outputCount);
         this.biases = new Array(outputCount);
-
+        // generate weights
         this.weights = [];
         for (let i = 0; i < inputCount; i++) {
             this.weights[i] = new Array(outputCount);
         }
-
+        // generate biases and randomize them
         Level.#randomize(this);
     }
 
-    // 1:40:00
+    // Get a random data for starting the network
     static #randomize(level) {
         // loop through all the inputs and outputs and set the weights to a random value between -1 and 1
         for (let i = 0; i < level.inputs.length; i++) {
@@ -50,6 +59,7 @@ export class Level {
         }
     }
 
+    // feed forward propagation of the level
     static feedForward(givenInputs, level) {
         // set the given inputs to the level's inputs
         for (let i = 0; i < level.inputs.length; i++) {
