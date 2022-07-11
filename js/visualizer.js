@@ -25,7 +25,7 @@ export class Visualizer{
                 left,levelTop,
                 width,levelHeight,
                 i==network.levels.length-1
-                    ?['🠉','🠈','🠊','🠋']
+                    ?['⬆','⬅', '➡' ,'⬇']
                     :[]
             );
         }
@@ -34,7 +34,7 @@ export class Visualizer{
     static drawLevel(ctx,level,left,top,width,height,outputLabels){
         const right=left+width;
         const bottom=top+height;
-
+        const nodeRadius=18;
         const {inputs,outputs,weights,biases}=level;
 
         for(let i=0;i<inputs.length;i++){
@@ -54,7 +54,6 @@ export class Visualizer{
             }
         }
 
-        const nodeRadius=18;
         for(let i=0;i<inputs.length;i++){
             const x=Visualizer.#getNodeX(inputs,i,left,right);
             ctx.beginPath();
@@ -65,6 +64,16 @@ export class Visualizer{
             ctx.arc(x,bottom,nodeRadius*0.6,0,Math.PI*2);
             ctx.fillStyle=getRGBA(inputs[i]);
             ctx.fill();
+
+            // add rays identifiers
+            ctx.textAlign="center";
+            ctx.textBaseline="middle";
+            ctx.fillStyle="#0095ff";
+            ctx.strokeStyle="#0069ff";
+            ctx.font=(nodeRadius*1)+"px Arial";
+            ctx.fillText(String(i),x,bottom+nodeRadius*0.1);
+            ctx.lineWidth=1;
+            ctx.strokeText(String(i),x,bottom+nodeRadius*0.1);
         }
 
         for(let i=0;i<outputs.length;i++){
@@ -90,11 +99,11 @@ export class Visualizer{
                 ctx.beginPath();
                 ctx.textAlign="center";
                 ctx.textBaseline="middle";
-                ctx.fillStyle="black";
-                ctx.strokeStyle="white";
-                ctx.font=(nodeRadius*1.5)+"px Arial";
+                ctx.fillStyle="#0095ff";
+                ctx.strokeStyle="#0069ff";
+                ctx.font=(nodeRadius*1)+"px Arial";
                 ctx.fillText(outputLabels[i],x,top+nodeRadius*0.1);
-                ctx.lineWidth=0.5;
+                ctx.lineWidth=0.7;
                 ctx.strokeText(outputLabels[i],x,top+nodeRadius*0.1);
             }
         }
