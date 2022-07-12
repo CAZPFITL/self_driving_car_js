@@ -94,5 +94,41 @@ export const trafficData = (road) => ([
     {
         x: road.getLaneCenter(2),
         y: -3100
+    },
+    {
+        x: road.getLaneCenter(0),
+        y: -3500
+    },
+    {
+        x: road.getLaneCenter(1),
+        y: -3300
+    },
+    {
+        x: road.getLaneCenter(2),
+        y: -3500
+    },
+    {
+        x: road.getLaneCenter(0),
+        y: -3900
+    },
+    {
+        x: road.getLaneCenter(1),
+        y: -3700
+    },
+    {
+        x: road.getLaneCenter(2),
+        y: -3900
+    },
+    {
+        x: road.getLaneCenter(0),
+        y: -4300
+    },
+    {
+        x: road.getLaneCenter(1),
+        y: -4100
+    },
+    {
+        x: road.getLaneCenter(2),
+        y: -4300
     }
 ])

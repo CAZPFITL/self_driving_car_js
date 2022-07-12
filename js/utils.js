@@ -1,4 +1,5 @@
 import {Factory} from './factory.js';
+import {Car} from "./car.js";
 
 // == Math utils ==
 // lerp works for linear interpolation
@@ -136,3 +137,11 @@ export const drawEntities = (gameCtx, entities, bestCar) => {
         bestCar.draw(gameCtx, bestCar.color, true);
     }
 };
+
+export function generateCars(factory, road, N) {
+    const cars = [];
+    for (let i = 0; i < N; i++) {
+        cars.push(factory.create(Car, {x: road.getLaneCenter(1), y: 100, model: 'sedan', control: 'AI', color: colors[2]}));
+    }
+    return cars;
+}

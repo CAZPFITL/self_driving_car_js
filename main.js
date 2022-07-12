@@ -1,16 +1,18 @@
-import {colors, updateEntities, processCtx, drawEntities, getCanvas, random} from './js/utils.js';
+import {
+    colors,
+    updateEntities,
+    processCtx,
+    drawEntities,
+    getCanvas,
+    random,
+    generateCars
+} from './js/utils.js';
 import {Car} from './js/car.js';
 import {Road} from './js/road.js';
 import {trafficData} from './js/traffic.js';
 import {Visualizer} from "./js/visualizer.js";
+import {NeuralNetwork} from "./js/network.js";
 
-function generateCars(N) {
-    const cars = [];
-    for (let i = 0; i < N; i++) {
-        cars.push(factory.create(Car, {x: road.getLaneCenter(1), y: 100, model: 'sedan', control: 'AI', color: colors[2]}));
-    }
-    return cars;
-}
 
 // main request
 var request;
@@ -23,12 +25,18 @@ const road = factory.create(Road, {x: gameCanvas.width / 2, width: gameCanvas.wi
 
 // create the car
 // TODO change the car to a const when finish the debug stage
-const N = 200;
-window.cars = generateCars(N)
+window.cars = generateCars(factory, road, 50)
 window.bestCar = cars[0].brain;
+
 if (localStorage.getItem('bestBrain')) {
-    console.log(localStorage.getItem('bestBrain'));
+    for (let i = 0; i < cars.length; i++) {
+        cars[i].brain = JSON.parse(localStorage.getItem('bestBrain'));
+        if (i != 0) {
+            NeuralNetwork.mutate(cars[i].brain, 0.1);
+        }
+    }
 }
+
 // create traffic
 const traffic = trafficData(road).map(({x, y}) =>
     factory.create(Car, {x, y, model: 'sedan', color: colors[Math.floor(random(5, colors.length))]})
@@ -36,13 +44,12 @@ const traffic = trafficData(road).map(({x, y}) =>
 
 window.save = () => {
     localStorage.setItem('bestBrain', JSON.stringify(window.bestCar.brain));
-    console.log('localStorage', localStorage);
-    console.log(window.bestCar, 'saved');
 }
 
 window.discard = () => {
     localStorage.removeItem('bestBrain');
 }
+
 // animate logic
 const animate = (time) => {
     window.bestCar = cars.find(car => car.y === Math.min(...cars.map(car => car.y)));
@@ -64,7 +71,7 @@ const animate = (time) => {
     // gameCtx restore & request animation frame
     gameCtx.restore();
     // Animate Line-dash
-    networkCtx.lineDashOffset = - time / 50;
+    networkCtx.lineDashOffset = -time / 50;
     Visualizer.drawNetwork(networkCtx, bestCar.brain);
     request = requestAnimationFrame(animate);
 }
