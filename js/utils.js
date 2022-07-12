@@ -13,7 +13,7 @@ export const getCanvas = (width) => {
     const gameCanvas = document.getElementById('gameCanvas');
     gameCanvas.width = width;
     const networkCanvas = document.getElementById('networkCanvas');
-    networkCanvas.width = width + 200;
+    networkCanvas.width = width + 100;
     return {
         gameCanvas,
         gameCtx: gameCanvas.getContext('2d'),
