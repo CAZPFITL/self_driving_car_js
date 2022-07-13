@@ -25,7 +25,7 @@ const road = factory.create(Road, {x: gameCanvas.width / 2, width: gameCanvas.wi
 
 // create the car
 // TODO change the car to a const when finish the debug stage
-window.cars = generateCars(factory, road, 50)
+window.cars = generateCars(factory, road, 300)
 window.bestCar = cars[0].brain;
 
 if (localStorage.getItem('bestBrain')) {
