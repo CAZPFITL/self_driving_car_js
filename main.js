@@ -71,7 +71,7 @@ const animate = (time) => {
     // gameCtx restore & request animation frame
     gameCtx.restore();
     // Animate Line-dash
-    networkCtx.lineDashOffset = -time / 50;
+    networkCtx.lineDashOffset = -time / 500;
     Visualizer.drawNetwork(networkCtx, bestCar.brain);
     request = requestAnimationFrame(animate);
 }
