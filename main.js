@@ -1,39 +1,80 @@
-import {getCanvas} from './js/utils.js';
+import {
+    colors,
+    updateEntities,
+    processCtx,
+    drawEntities,
+    getCanvas,
+    random,
+    generateCars
+} from './js/utils.js';
 import {Car} from './js/car.js';
 import {Road} from './js/road.js';
+import {trafficData} from './js/traffic.js';
+import {Visualizer} from "./js/visualizer.js";
+import {NeuralNetwork} from "./js/network.js";
 
-// create the canvas
-const {canvas, ctx, factory} = getCanvas(200);
+
+// main request
+var request;
+
+// create the gameCanvas
+const {gameCanvas, gameCtx, networkCanvas, networkCtx, factory} = getCanvas(200);
 
 // create the road
-const road = factory.create(Road, {
-    x: canvas.width / 2,
-    width: canvas.width * 0.9
-});
+const road = factory.create(Road, {x: gameCanvas.width / 2, width: gameCanvas.width * 0.9});
 
 // create the car
-const car = factory.create(Car, {
-    x: road.getLaneCenter(1),
-    y: 100,
-    width: road.getLaneWidth() * 0.6,
-    height: road.getLaneWidth()
-});
+// TODO change the car to a const when finish the debug stage
+window.cars = generateCars(factory, road, 50)
+window.bestCar = cars[0].brain;
 
-// animate logic
-const animate = () => {
-    car.update();
-    canvas.height = window.innerHeight;
-
-    const yTranslation = -car.y + canvas.height / 2;
-
-    ctx.save();
-    ctx.translate(0, yTranslation);
-
-    road.draw(ctx);
-    car.draw(ctx);
-
-    ctx.restore();
-    requestAnimationFrame(animate);
+if (localStorage.getItem('bestBrain')) {
+    for (let i = 0; i < cars.length; i++) {
+        cars[i].brain = JSON.parse(localStorage.getItem('bestBrain'));
+        if (i != 0) {
+            NeuralNetwork.mutate(cars[i].brain, 0.1);
+        }
+    }
 }
 
-animate();
+// create traffic
+const traffic = trafficData(road).map(({x, y}) =>
+    factory.create(Car, {x, y, model: 'sedan', color: colors[Math.floor(random(5, colors.length))]})
+);
+
+window.save = () => {
+    localStorage.setItem('bestBrain', JSON.stringify(window.bestCar.brain));
+}
+
+window.discard = () => {
+    localStorage.removeItem('bestBrain');
+}
+
+// animate logic
+const animate = (time) => {
+    window.bestCar = cars.find(car => car.y === Math.min(...cars.map(car => car.y)));
+
+    // update the entities providing data to them
+    updateEntities({road, cars, traffic});
+    // process the ctx
+    processCtx({
+        gameCanvas,
+        gameCtx,
+        networkCanvas,
+        networkCtx,
+        bestCar
+    });
+
+    // draw the entities
+    drawEntities(gameCtx, [road, traffic, cars], bestCar);
+
+    // gameCtx restore & request animation frame
+    gameCtx.restore();
+    // Animate Line-dash
+    networkCtx.lineDashOffset = -time / 50;
+    Visualizer.drawNetwork(networkCtx, bestCar.brain);
+    request = requestAnimationFrame(animate);
+}
+
+request = requestAnimationFrame(animate);
+
